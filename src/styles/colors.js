@@ -3,5 +3,6 @@ export default {
     secondary: "#FFF",
     
     bgColor: "white",
-    searchResultCardBgColou: "#f2f2f2"
+    detailedScreenBgColor: "#f2f2f2",
+    searchResultCardBgColour: "#f2f2f2",
   };

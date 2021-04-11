@@ -1,12 +1,16 @@
 import React, { Component } from "react";
-import { Dimensions, View, Text } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, ScrollView, Dimensions, View, Text, TouchableOpacity } from "react-native";
 import HTMLView from 'react-native-htmlview';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
 import styles from "./styles";
 import * as Font from 'expo-font'
 
+import Icon1 from 'react-native-vector-icons/Ionicons';
+
 import { getQuestionDetails, getAnswersforQuestion } from '../../actions/actions';
+
 
 class DetailedScreen extends Component {
 
@@ -16,11 +20,12 @@ class DetailedScreen extends Component {
 
     id : null,
     q_data : {},
+    question_text : "",
     a_data : {},
   }
 
   componentDidMount(){
-    //console.log(this.props.route.params.id)
+    console.log(this.props.route.params.id)
     this.setState({
       id: this.props.route.params.id
     },
@@ -56,7 +61,8 @@ class DetailedScreen extends Component {
       //console.log(res.data.items[0])
 
       this.setState({
-        q_data : res.data.items[0]
+        q_data : res.data.items[0],
+        question_text : (res.data.items[0].body).replace(/\n/g,"")
       })
 
     } catch (error) {
@@ -85,11 +91,31 @@ class DetailedScreen extends Component {
 
   render() {
     return (
-        <View>
-            <Text>Detailed Screen</Text>
+      <SafeAreaView style={{height:this.state.height, backgroundColor:colors.detailedScreenBgColor}}>
+        <View style={styles.topLayout}>
+          <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.goBack()} style={styles.backButtonOuterLayout}>
+            <Icon1 name="ios-chevron-back" size={Mixins.scale(25)} color={colors.primary}/>
+          </TouchableOpacity>
         </View>
+        <ScrollView>
+          <View style={styles.questionOuterLayout}>
+            <HTMLView stylesheet={htmlStyles} value={this.state.question_text} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
+
+const htmlStyles = StyleSheet.create({
+  code: {
+      fontFamily: "Poppins-Regular",
+      backgroundColor: colors.searchResultCardBgColour,
+  },
+  p: {
+    fontFamily: "Poppins-Regular",
+  }
+
+})
 
 export default DetailedScreen;

@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     questionCardLayout: {
         flexDirection:"row",
         alignItems:"center", 
-        backgroundColor: colors.searchResultCardBgColou,
+        backgroundColor: colors.searchResultCardBgColour,
         marginBottom: Mixins.scale(10), 
         padding: Mixins.scale(10),
         elevation:3,
