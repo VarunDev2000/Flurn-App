@@ -16,6 +16,8 @@ class SearchResultScreen extends Component {
   state = {
     height: Dimensions.get("screen").height,
     width: Dimensions.get("screen").width,
+
+    search_type: "seacrh",
     searchText : "",
     data : {},
     page : 1,
@@ -49,15 +51,32 @@ class SearchResultScreen extends Component {
   getData = async (page) => {
     this.loadFonts();
       try {
-        let res = await getSearchResults(this.state.searchText, page)
-        //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
-        console.log(res.data.items[0].owner.profile_image)
         this.setState({
-          data : res.data
+          search_type: "search"
         })
+        let res = await getSearchResults("search", this.state.searchText, page)
+        //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
+        //console.log(res.data.items.length)
+
+        if(page == 1 && res.data.items.length <= 0){
+          this.setState({
+            search_type: "similar"
+          })
+          let res1 = await getSearchResults("similar", this.state.searchText, page)
+          this.setState({
+            data : res1.data
+          })
+          console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
+          console.log(res1.data)
+        }
+        else{
+          this.setState({
+            data : res.data
+          })
+        }
 
       } catch (error) {
-        console.error(error.response);
+        console.log(error.response);
       }
   }
 
@@ -103,53 +122,61 @@ class SearchResultScreen extends Component {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={{flex:1}}>
-            <FlatList
-              keyExtractor={(item, index) => index.toString()}
-              showsVerticalScrollIndicator= {false}
-              style={{ width: "100%",alignSelf:"center"}}
-              data={this.state.data.items}
-              renderItem={({ item }) => (   
-                <TouchableOpacity activeOpacity={0.8} onPress={() => null} style={styles.questionCardLayout}> 
-                  <View style={{width:"24%",marginRight: Mixins.scale(10),marginLeft: Mixins.scale(2)}}>
-                    {
-                      item.owner.profile_image != undefined ? (
-                      <View style={styles.profileImageOuterlayout}>
-                        <Image style={styles.profileImageStyle} source={{uri : item.owner.profile_image}} />
+          <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+            {
+              this.state.data.items != undefined && this.state.data.items.length > 0 ? (
+                <FlatList
+                  keyExtractor={(item, index) => index.toString()}
+                  showsVerticalScrollIndicator= {false}
+                  style={{ width: "100%",alignSelf:"center"}}
+                  data={this.state.data.items}
+                  renderItem={({ item }) => (   
+                    <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate("DetailedScreen",{id:item.question_id})} style={styles.questionCardLayout}> 
+                      <View style={{width:"24%",marginRight: Mixins.scale(10),marginLeft: Mixins.scale(2)}}>
+                        {
+                          item.owner.profile_image != undefined ? (
+                          <View style={styles.profileImageOuterlayout}>
+                            <Image style={styles.profileImageStyle} source={{uri : item.owner.profile_image}} />
+                          </View>
+                          ) : (null)
+                        }
+                        <Text numberOfLines={1} style={[styles.userNameText,{fontFamily:"Poppins-Medium"}]}>{item.owner.display_name}</Text>
+                        <View style={{alignSelf:"center",justifyContent:"center",alignItems:"center"}}>
+                          <View style={{flexDirection:"row", alignItems:"center", marginBottom:Mixins.scale(5)}}>
+                            <Icon1 name="eye" size={Mixins.scale(14)} color="black" style={{marginRight:Mixins.scale(5)}}/>
+                            <Text numberOfLines={1} style={styles.attributeText}>{item.view_count}</Text>
+                          </View>
+                          <View style={{flexDirection:"row", alignItems:"center"}}>
+                            <Icon2 name="caretup" size={Mixins.scale(14)} color="black" style={{marginRight:Mixins.scale(5),marginTop:Mixins.scale(3)}}/>
+                            <Text numberOfLines={1} style={styles.attributeText}>{item.score}</Text>
+                          </View>
+                        </View>
                       </View>
-                      ) : (null)
-                    }
-                    <Text numberOfLines={1} style={[styles.userNameText,{fontFamily:"Poppins-Medium"}]}>{item.owner.display_name}</Text>
-                    <View style={{alignSelf:"center",justifyContent:"center",alignItems:"center"}}>
-                      <View style={{flexDirection:"row", alignItems:"center", marginBottom:Mixins.scale(5)}}>
-                        <Icon1 name="eye" size={Mixins.scale(14)} color="black" style={{marginRight:Mixins.scale(5)}}/>
-                        <Text numberOfLines={1} style={styles.attributeText}>{item.view_count}</Text>
+                      <View style={{width:"71%",padding : Mixins.scale(2)}}>
+                        <View style={styles.htmlOuterlayout}>
+                          <HTMLView stylesheet={htmlStyles} value={"<title>" + item.title + "</title>"} />
+                        </View>
+                        <View style={styles.tagContainer}>
+                          {
+                            item.tags.map(function(object, i){
+                              return (
+                                <View key={"tag" + i} style={styles.tagOuterLayout}>
+                                  <Text style={[styles.tagText,{fontFamily: "Poppins-Regular"}]}>{object}</Text>
+                                </View>
+                              )
+                            })
+                          }
+                        </View>
                       </View>
-                      <View style={{flexDirection:"row", alignItems:"center"}}>
-                        <Icon2 name="caretup" size={Mixins.scale(14)} color="black" style={{marginRight:Mixins.scale(5),marginTop:Mixins.scale(3)}}/>
-                        <Text numberOfLines={1} style={styles.attributeText}>{item.score}</Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={{width:"71%",padding : Mixins.scale(2)}}>
-                    <View style={styles.htmlOuterlayout}>
-                      <HTMLView stylesheet={htmlStyles} value={"<title>" + item.title + "</title>"} />
-                    </View>
-                    <View style={styles.tagContainer}>
-                      {
-                        item.tags.map(function(object, i){
-                          return (
-                            <View key={"tag" + i} style={styles.tagOuterLayout}>
-                              <Text style={[styles.tagText,{fontFamily: "Poppins-Regular"}]}>{object}</Text>
-                            </View>
-                          )
-                        })
-                      }
-                    </View>
-                  </View>
-                </TouchableOpacity> 
-              )}
-            />
+                    </TouchableOpacity> 
+                  )}
+                />
+              ) : (
+                <View style={styles.searchErrorImageOuterlayout}>
+                  <Image style={styles.searchErrorImageStyle} source={require("./res/search_error.png")} />
+                </View>
+              )
+            }
           </View>
         </SafeAreaView>
     );

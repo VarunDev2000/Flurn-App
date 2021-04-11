@@ -101,6 +101,17 @@ const styles = StyleSheet.create({
         color:"#808080",
         textDecorationLine:"underline"
     },
+    searchErrorImageOuterlayout: {
+        width:Mixins.scale(200),
+        height: Mixins.scale(200),
+        backgroundColor:"white",
+        alignSelf:"center",
+    },
+    searchErrorImageStyle: {
+        width:"100%",
+        height:"100%",
+        resizeMode: "contain",
+    }
 
 })
 
