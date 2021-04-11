@@ -20,15 +20,14 @@ const styles = StyleSheet.create({
         backgroundColor:"white",
         borderWidth: 1,
         borderRadius:5,
-        paddingLeft:10,
-        paddingRight:10,
+        paddingLeft:Mixins.scale(10),
+        paddingRight:Mixins.scale(10),
         color: 'black',
         elevation:2
       },
       imageOuterLayout: {
           width:Mixins.scale(150),
           height: Mixins.scale(80),
-          backgroundColor:"red",
           marginBottom: Mixins.scale(20)
       },
       imageStyle: {

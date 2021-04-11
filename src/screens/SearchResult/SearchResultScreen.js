@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, Image, TextInput } from "react-native";
 import HTMLView from 'react-native-htmlview';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
@@ -16,13 +16,20 @@ class SearchResultScreen extends Component {
   state = {
     height: Dimensions.get("screen").height,
     width: Dimensions.get("screen").width,
+    searchText : "",
     data : {},
     page : 1,
   }
 
   componentDidMount(){
     //console.log(this.props.route.params.searchText)
-    this.getData(this.state.page)
+    this.setState({
+      searchText: this.props.route.params.searchText
+    },
+      function(){
+        this.getData(this.state.page)
+      }
+    )
   }
 
   loadFonts = async () =>{
@@ -41,22 +48,61 @@ class SearchResultScreen extends Component {
 
   getData = async (page) => {
     this.loadFonts();
-    try {
-      let res = await getSearchResults(this.props.route.params.searchText, page)
-      //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
-      console.log(res.data)
-      this.setState({
-        data : res.data
-      })
+      try {
+        let res = await getSearchResults(this.state.searchText, page)
+        //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
+        console.log(res.data.items[0].owner.profile_image)
+        this.setState({
+          data : res.data
+        })
 
-    } catch (error) {
-      console.error(error.response);
+      } catch (error) {
+        console.error(error.response);
+      }
+  }
+
+  startSearch = () => {
+    if(this.state.searchText != "") {
+      this.setState({
+        data : {},
+        page : 1
+      },
+        function(){
+          this.getData(this.state.page)
+        }
+      ) 
+    }
+  }
+
+  render() {
+
+    const textChange = (val) => {
+      this.setState({
+        searchText : val
+      })
     }
 
-  }
-  render() {
     return (
-        <SafeAreaView style={{height:this.state.height}}>
+        <SafeAreaView style={{height:this.state.height, backgroundColor:colors.bgColor}}>
+          <View style={styles.topLayout}>
+            <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.goBack()} style={styles.backButtonOuterLayout}>
+              <Icon1 name="ios-chevron-back" size={Mixins.scale(25)} color={colors.primary}/>
+            </TouchableOpacity>
+            <View style={styles.textFieldStyle}>
+              <TextInput 
+                style = {{width:"93%"}}
+                value = {this.state.searchText}
+                underlineColorAndroid = "transparent"
+                placeholder = "Search"
+                placeholderTextColor = "#858585"
+                autoCapitalize = "none"
+                onChangeText = {val => textChange(val)}
+                onSubmitEditing = {() => this.startSearch()}/>
+              <TouchableOpacity activeOpacity={0.5} onPress={() => this.startSearch()} style={{paddingHorizontal:Mixins.scale(5),justifyContent: "center", alignItems:"center"}}>
+                <Icon1 name="search" size={Mixins.scale(17)} color="#858585" style={{paddingTop:Mixins.scale(4)}}/>
+              </TouchableOpacity>
+            </View>
+          </View>
           <View style={{flex:1}}>
             <FlatList
               keyExtractor={(item, index) => index.toString()}
@@ -65,21 +111,31 @@ class SearchResultScreen extends Component {
               data={this.state.data.items}
               renderItem={({ item }) => (   
                 <TouchableOpacity activeOpacity={0.8} onPress={() => null} style={styles.questionCardLayout}> 
-                  <View style={{marginRight: Mixins.scale(15)}}>
-                    <View style={{flexDirection:"row", alignItems:"center", marginBottom:Mixins.scale(5)}}>
-                      <Icon1 name="eye" size={Mixins.scale(14)} color="black" style={{marginRight:Mixins.scale(5)}}/>
-                      <Text style={{fontSize:12, fontFamily:"Poppins-SemiBold", marginTop: Mixins.scale(2)}}>{item.view_count}</Text>
-                    </View>
-                    <View style={{flexDirection:"row", alignItems:"center"}}>
-                      <Icon2 name="caretup" size={Mixins.scale(14)} color="black" style={{marginRight:Mixins.scale(5),marginTop:Mixins.scale(3)}}/>
-                      <Text style={{fontSize:12, fontFamily:"Poppins-SemiBold", marginTop: Mixins.scale(2)}}>{item.score}</Text>
+                  <View style={{width:"24%",marginRight: Mixins.scale(10),marginLeft: Mixins.scale(2)}}>
+                    {
+                      item.owner.profile_image != undefined ? (
+                      <View style={styles.profileImageOuterlayout}>
+                        <Image style={styles.profileImageStyle} source={{uri : item.owner.profile_image}} />
+                      </View>
+                      ) : (null)
+                    }
+                    <Text numberOfLines={1} style={[styles.userNameText,{fontFamily:"Poppins-Medium"}]}>{item.owner.display_name}</Text>
+                    <View style={{alignSelf:"center",justifyContent:"center",alignItems:"center"}}>
+                      <View style={{flexDirection:"row", alignItems:"center", marginBottom:Mixins.scale(5)}}>
+                        <Icon1 name="eye" size={Mixins.scale(14)} color="black" style={{marginRight:Mixins.scale(5)}}/>
+                        <Text numberOfLines={1} style={styles.attributeText}>{item.view_count}</Text>
+                      </View>
+                      <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <Icon2 name="caretup" size={Mixins.scale(14)} color="black" style={{marginRight:Mixins.scale(5),marginTop:Mixins.scale(3)}}/>
+                        <Text numberOfLines={1} style={styles.attributeText}>{item.score}</Text>
+                      </View>
                     </View>
                   </View>
-                  <View style={{padding : Mixins.scale(2)}}>
+                  <View style={{width:"71%",padding : Mixins.scale(2)}}>
                     <View style={styles.htmlOuterlayout}>
                       <HTMLView stylesheet={htmlStyles} value={"<title>" + item.title + "</title>"} />
                     </View>
-                    <View style={{flex:1,flexWrap:"wrap",flexDirection:"row",alignItems:"center",width:"85%"}}>
+                    <View style={styles.tagContainer}>
                       {
                         item.tags.map(function(object, i){
                           return (
@@ -102,7 +158,8 @@ class SearchResultScreen extends Component {
 
 const htmlStyles = StyleSheet.create({
   title: {
-      lineHeight: 20,
+      fontSize: Mixins.scale(11),
+      lineHeight: 22,
       fontFamily: "Poppins-Regular"
     },
 

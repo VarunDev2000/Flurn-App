@@ -2,6 +2,6 @@ export default {
     primary: "#53a665",
     secondary: "#FFF",
     
-    bgColor: "#fafafa",
-    searchResultCardBgColou: "#e6e6e6"
+    bgColor: "white",
+    searchResultCardBgColou: "#f2f2f2"
   };

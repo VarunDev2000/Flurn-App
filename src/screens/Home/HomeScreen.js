@@ -22,6 +22,12 @@ class HomeScreen extends Component {
       })
     }
 
+    const search = () => {
+      if(this.state.searchText != ""){
+        this.props.navigation.navigate("SearchResultScreen",{searchText: this.state.searchText})
+      }
+    }
+
     return (
         <SafeAreaView style={{height:this.state.height}}>
           <KeyboardAwareScrollView enableOnAndroid={true} >
@@ -36,8 +42,8 @@ class HomeScreen extends Component {
                   placeholderTextColor = "#858585"
                   autoCapitalize = "none"
                   onChangeText = {val => textChange(val)}
-                  onSubmitEditing = {() => this.props.navigation.navigate("SearchResultScreen",{searchText: this.state.searchText})}/>
-                <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.navigate("SearchResultScreen",{searchText: this.state.searchText})} style={{paddingHorizontal:Mixins.scale(5),justifyContent: "center", alignItems:"center"}}>
+                  onSubmitEditing = {() => search()} />
+                <TouchableOpacity activeOpacity={0.5} onPress={() => search()} style={{paddingHorizontal:Mixins.scale(5),justifyContent: "center", alignItems:"center"}}>
                   <Icon1 name="search" size={Mixins.scale(17)} color="#858585" style={{paddingTop:Mixins.scale(4)}}/>
                 </TouchableOpacity>
               </View>
