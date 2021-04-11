@@ -3,4 +3,5 @@ export default {
     secondary: "#FFF",
     
     bgColor: "#fafafa",
+    searchResultCardBgColou: "#e6e6e6"
   };
