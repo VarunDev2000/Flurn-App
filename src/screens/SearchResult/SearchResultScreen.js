@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, Image, TextInput } from "react-native";
-import HTMLView from 'react-native-htmlview';
+import HTML from "react-native-render-html";
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
 import styles from "./styles";
@@ -213,7 +213,7 @@ class SearchResultScreen extends Component {
                           </View>
                           <View style={{width:"71%",padding : Mixins.scale(2)}}>
                             <View style={styles.htmlOuterlayout}>
-                              <HTMLView stylesheet={htmlStyles} value={"<title>" + item.title + "</title>"} />
+                              <HTML tagsStyles={htmlStyles} contentWidth={0.90 * Dimensions.get('window').width} source={{ html: "<title>" + item.title + "</title>" }} />
                             </View>
                             <View style={styles.tagContainer}>
                               {

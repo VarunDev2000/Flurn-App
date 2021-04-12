@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, ScrollView, Dimensions, View, Text, TouchableOpacity, Image } from "react-native";
-import HTMLView from 'react-native-htmlview';
+import HTML from "react-native-render-html";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
@@ -72,10 +72,7 @@ class DetailedScreen extends Component {
       //console.log(res.data.items[0])
 
       this.setState({
-        question_text : (res.data.items[0].body).replace(/\n/g,""),
-      })
-
-      this.setState({
+        question_text : res.data.items[0].body,
         q_data : res.data.items[0],
         profile_image: res.data.items[0].owner.profile_image,
         user_name: res.data.items[0].owner.display_name,
@@ -216,12 +213,12 @@ class DetailedScreen extends Component {
                   </View>
                 </View>
                 <View style={styles.cardQuestionDescriptionLayout}>
-                  <HTMLView stylesheet={htmlStyles} value={this.state.question_text} />
+                  <HTML tagsStyles={htmlStyles} contentWidth={0.90 * Dimensions.get('window').width} source={{ html: this.state.question_text }} />
                 </View>
               </View>
               {
                 this.state.a_data.map(function(object, i){
-                  let answer_text = (object.body).replace(/\n/g,"")
+                  let answer_text = object.body
                   return (
                     <View key={"answer" + i} style={[styles.answerOuterLayout,{borderWidth : object.is_accepted ? (1) : (0)}]}>
                       <View style={styles.cardInfoLayout}>
@@ -243,7 +240,7 @@ class DetailedScreen extends Component {
                         </View>
                       </View>
                       <View style={styles.cardAnswerDescriptionLayout}>
-                        <HTMLView stylesheet={htmlStyles} value={answer_text} />
+                        <HTML tagsStyles={htmlStyles} contentWidth={0.90 * Dimensions.get('window').width} source={{ html: answer_text }} />
                       </View>
                     </View>
                   )
@@ -259,16 +256,16 @@ class DetailedScreen extends Component {
 
 const htmlStyles = StyleSheet.create({
   code: {
-      fontSize : Mixins.scale(11),
-      fontFamily: "Poppins-Regular",
-      backgroundColor: colors.searchResultCardBgColour,
-      fontStyle:"italic",
+    fontSize : Mixins.scale(10),
+    fontFamily: "Poppins-Medium",
+    backgroundColor: colors.searchResultCardBgColour,
+    lineHeight: 25,
   },
   p: {
     fontSize : Mixins.scale(11),
     fontFamily: "Poppins-Regular",
     lineHeight: 25,
-    fontStyle:"normal",
+    fontStyle:"normal"
   },
   a: {
     fontSize : Mixins.scale(11),
@@ -276,9 +273,10 @@ const htmlStyles = StyleSheet.create({
     lineHeight: 25,
     color:"green",
     textDecorationLine:"underline",
-    fontStyle:"normal",
+    fontStyle:"normal"
+  },
+  image: {
+    marginVertical: Mixins.scale(20)
   }
-
 })
-
 export default DetailedScreen;

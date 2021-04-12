@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet, View, Alert, Image, Text, TouchableOpacity } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import HTMLView from 'react-native-htmlview';
+import HTML from "react-native-render-html";
 import styles from "./styles";
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors"
@@ -143,7 +143,7 @@ class CachedQuestionsScreen extends Component {
                             </View>
                             <View style={{width:"71%",padding : Mixins.scale(2)}}>
                               <View style={styles.htmlOuterlayout}>
-                                <HTMLView stylesheet={htmlStyles} value={"<title>" + this.state.data[key]['question_data'].title + "</title>"} />
+                                <HTML tagsStyles={htmlStyles} contentWidth={0.90 * Dimensions.get('window').width} source={{ html: "<title>" + this.state.data[key]['question_data'].title + "</title>" }} />
                               </View>
                               <View style={styles.tagContainer}>
                                 {

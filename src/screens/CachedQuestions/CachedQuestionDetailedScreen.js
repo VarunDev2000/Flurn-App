@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, ScrollView, Dimensions, View, Text, TouchableOpacity, Image } from "react-native";
-import HTMLView from 'react-native-htmlview';
+import HTML from "react-native-render-html";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
@@ -67,11 +67,8 @@ class CachedQuestionDetailedScreen extends Component {
     //console.log(b_data)
 
     this.setState({
-      question_text : (b_data[this.state.id]['question_data'].body).replace(/\n/g,""),
-    })
-
-    this.setState({
       bookmark_data : b_data,
+      question_text : b_data[this.state.id]['question_data'].body,
       profile_image: b_data[this.state.id]['question_data'].owner.profile_image,
       user_name: b_data[this.state.id]['question_data'].owner.display_name,
       score: b_data[this.state.id]['question_data'].score,
@@ -113,12 +110,12 @@ class CachedQuestionDetailedScreen extends Component {
                   </View>
                 </View>
                 <View style={styles.cardQuestionDescriptionLayout}>
-                  <HTMLView stylesheet={htmlStyles} value={this.state.question_text} />
+                  <HTML tagsStyles={htmlStyles} contentWidth={0.90 * Dimensions.get('window').width} source={{ html: this.state.question_text }} />
                 </View>
               </View>
               {
                 this.state.a_data.map(function(object, i){
-                  let answer_text = (object.body).replace(/\n/g,"")
+                  let answer_text = object.body
                   return (
                     <View key={"answer" + i} style={[styles.answerOuterLayout,{borderWidth : object.is_accepted ? (1) : (0)}]}>
                       <View style={styles.cardInfoLayout}>
@@ -140,7 +137,7 @@ class CachedQuestionDetailedScreen extends Component {
                         </View>
                       </View>
                       <View style={styles.cardAnswerDescriptionLayout}>
-                        <HTMLView stylesheet={htmlStyles} value={answer_text} />
+                        <HTML tagsStyles={htmlStyles} contentWidth={0.90 * Dimensions.get('window').width} source={{ html: answer_text }} />
                       </View>
                     </View>
                   )
@@ -156,10 +153,10 @@ class CachedQuestionDetailedScreen extends Component {
 
 const htmlStyles = StyleSheet.create({
   code: {
-    fontSize : Mixins.scale(11),
-    fontFamily: "Poppins-Regular",
+    fontSize : Mixins.scale(10),
+    fontFamily: "Poppins-Medium",
     backgroundColor: colors.searchResultCardBgColour,
-    fontStyle:"italic",
+    lineHeight: 25,
   },
   p: {
     fontSize : Mixins.scale(11),
