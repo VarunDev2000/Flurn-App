@@ -22,7 +22,7 @@ class AppNavigation extends Component {
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
           <Stack.Screen name="DetailedScreen" component={DetailedScreen} />
-          <Stack.Screen name="CachedQuestionsScreen" component={CachedQuestionsScreen} />
+          <Stack.Screen name="CachedQuestionsScreen" component={CachedQuestionsScreen}/>
           <Stack.Screen name="CachedQuestionDetailedScreen" component={CachedQuestionDetailedScreen} />
         </Stack.Navigator>
     );

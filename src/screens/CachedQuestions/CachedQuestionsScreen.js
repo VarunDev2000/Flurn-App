@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Dimensions, StyleSheet, View, FlatList, Image, Text, TouchableOpacity } from "react-native";
+import { Dimensions, StyleSheet, View, Alert, Image, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,9 +20,8 @@ class CachedQuestionsScreen extends Component {
     height: Dimensions.get("screen").height,
 
     loading: true,
-
+    data_len : 0,
     data: {},
-    searchText : "",
   }
 
   componentDidMount(){
@@ -62,29 +61,62 @@ class CachedQuestionsScreen extends Component {
 
     this.setState({
       data : b_data,
+      data_len : Object.keys(b_data).length,
       loading : false
     })
+  }
+
+  //Ask for delete confirmation
+  handleDeleteButtonClick() {
+    Alert.alert("Hold on!", "Are you sure you want to clear all data?", [
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel"
+      },
+      { text: "YES", onPress: () => this.deleteAll() }
+    ]);
+    return true;
+  }
+
+  deleteAll = async () => {
+    await AsyncStorage.setItem('bookmarks',JSON.stringify({}))
+    this.setState({
+      loading: true,
+      data: {},
+    },
+      function(){
+        this.getData()
+      }
+    )
   }
 
   render() {
     return (
         <SafeAreaView style={{height:this.state.height, backgroundColor:colors.bgColor}}>
             <View style={styles.topLayout}>
-              <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.goBack()} style={styles.backButtonOuterLayout}>
-                <Icon1 name="ios-chevron-back" size={Mixins.scale(25)} color={colors.primary}/>
-              </TouchableOpacity>
-              <Text style={[styles.pageTitle,{fontFamily:"Poppins-SemiBold"}]}>Bookmarks</Text>
-              <TouchableOpacity activeOpacity={0.5} onPress={() => null} style={styles.backButtonOuterLayout}>
-              </TouchableOpacity>
+              <View style={{flexDirection:"row",alignItems:"center",width:"60%"}}>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.goBack()} style={styles.backButtonOuterLayout}>
+                  <Icon1 name="ios-chevron-back" size={Mixins.scale(25)} color={colors.primary}/>
+                </TouchableOpacity>
+                <Text style={[styles.pageTitle,{fontFamily:"Poppins-SemiBold"}]}>Bookmarks</Text>
+              </View>
+              {
+                this.state.loading | this.state.data_len <= 0 ? (null) : (
+                  <TouchableOpacity activeOpacity={0.5} onPress={() => this.handleDeleteButtonClick()} style={styles.deleteTextOuterLayout}>
+                    <Text style={[styles.deleteText,{fontFamily: "Poppins-Regular"}]}>Clear cache</Text>
+                  </TouchableOpacity> 
+                )
+              }
             </View>
             {
               this.state.loading ? (
                 <Loader3 marginBottom={Mixins.scale(80)}/>
               ) : (
                 <View style={styles.outerLayout}>
-                  <ScrollView>
+                  <ScrollView showsVerticalScrollIndicator={false}>
                     {
-                      this.state.data != undefined && this.state.data != {} ? (
+                      this.state.data != undefined && this.state.data_len > 0 ? (
                         Object.keys(this.state.data).map((key, index) => ( 
                           <TouchableOpacity key={"bookmark" + index} activeOpacity={0.8} onPress={() => this.props.navigation.navigate("CachedQuestionDetailedScreen",{id:this.state.data[key]['question_data'].question_id})} style={styles.questionCardLayout}> 
                             <View style={{width:"24%",marginRight: Mixins.scale(10),marginLeft: Mixins.scale(2)}}>
@@ -127,7 +159,11 @@ class CachedQuestionsScreen extends Component {
                             </View>
                           </TouchableOpacity> 
                         ))
-                      ) : (null)
+                      ) : (
+                        <View style={styles.searchErrorImageOuterlayout}>
+                          <Image style={styles.searchErrorImageStyle} source={require("../SearchResult/res/search_error.png")} />
+                        </View>
+                      )
                     }
                   </ScrollView>
                 </View>

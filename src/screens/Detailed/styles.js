@@ -89,6 +89,16 @@ const styles = StyleSheet.create({
         alignSelf:"center",
         textAlign:"left",
     },
+    deleteTextOuterLayout: {
+        justifyContent:"center",
+        alignItems:"center",
+        height:"100%"
+    },
+    deleteText: {
+        color: "red",
+        fontSize: Mixins.scale(11),
+        marginRight: "4%"
+    }
 })
 
 

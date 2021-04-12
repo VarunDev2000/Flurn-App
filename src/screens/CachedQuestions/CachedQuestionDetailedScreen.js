@@ -28,6 +28,8 @@ class CachedQuestionDetailedScreen extends Component {
     user_name : "",
     score: 0,
     a_data : [],
+
+    bookmark_data: {},
   }
 
   componentDidMount(){
@@ -65,19 +67,19 @@ class CachedQuestionDetailedScreen extends Component {
     //console.log(b_data)
 
     this.setState({
-        question_text : (b_data[this.state.id]['question_data'].body).replace(/\n/g,""),
+      question_text : (b_data[this.state.id]['question_data'].body).replace(/\n/g,""),
     })
 
     this.setState({
-        profile_image: b_data[this.state.id]['question_data'].owner.profile_image,
-        user_name: b_data[this.state.id]['question_data'].owner.display_name,
-        score: b_data[this.state.id]['question_data'].score,
-        a_data : b_data[this.state.id]['answer_data'],
-        loading : false
+      bookmark_data : b_data,
+      profile_image: b_data[this.state.id]['question_data'].owner.profile_image,
+      user_name: b_data[this.state.id]['question_data'].owner.display_name,
+      score: b_data[this.state.id]['question_data'].score,
+      a_data : b_data[this.state.id]['answer_data'],
+      loading : false
     })
   }
 
-  
   render() {
     return (
       <SafeAreaView style={{height:this.state.height, backgroundColor:colors.detailedScreenBgColor}}>

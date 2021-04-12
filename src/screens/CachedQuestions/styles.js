@@ -18,12 +18,14 @@ const styles = StyleSheet.create({
         alignSelf:"center"
     },
     backButtonOuterLayout: {
-        width:"10%",
+        width:"15%",
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        marginRight: "5%",
     },
     pageTitle: {
-        fontSize: Mixins.scale(14)
+        fontSize: Mixins.scale(15),
+        marginTop: Mixins.scale(2)
     },
     questionCardLayout: {
         flex:0,
@@ -99,11 +101,22 @@ const styles = StyleSheet.create({
         height: Mixins.scale(200),
         backgroundColor:"white",
         alignSelf:"center",
+        marginTop: "50%"
     },
     searchErrorImageStyle: {
         width:"100%",
         height:"100%",
         resizeMode: "contain",
+    },
+    deleteTextOuterLayout: {
+        justifyContent:"center",
+        alignItems:"center",
+        height:"100%"
+    },
+    deleteText: {
+        color: "red",
+        fontSize: Mixins.scale(11),
+        marginRight: "4%"
     }
 })
 
