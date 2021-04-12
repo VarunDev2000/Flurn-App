@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         alignSelf:"center",
         backgroundColor:"white",
         marginBottom: Mixins.scale(10),
-        borderWidth:0.7,
+        borderWidth:1,
         borderColor: "#ff8f8f"
     },
     answerOuterLayout: {

@@ -7,7 +7,7 @@ import colors from "../../styles/colors";
 import styles from "./styles";
 import * as Font from 'expo-font';
 
-import Loader2 from "../../components/Loader2";
+import Loader2 from "../../components/Loaders/Loader2";
 
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/AntDesign';
@@ -148,7 +148,7 @@ class DetailedScreen extends Component {
                 this.state.a_data.map(function(object, i){
                   let answer_text = (object.body).replace(/\n/g,"")
                   return (
-                    <View key={"answer" + i} style={[styles.answerOuterLayout,{borderWidth : object.is_accepted ? (0.7) : (0)}]}>
+                    <View key={"answer" + i} style={[styles.answerOuterLayout,{borderWidth : object.is_accepted ? (1) : (0)}]}>
                       <View style={styles.cardInfoLayout}>
                         <View style={{width:"69%",flexDirection:"row",alignItems:"center",flexWrap:"wrap"}}>
                           <View style={styles.profileImageOuterlayout}>

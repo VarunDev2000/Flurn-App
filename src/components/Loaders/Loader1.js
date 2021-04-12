@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import {Image, View, StyleSheet} from 'react-native';
-import * as Mixins from '../styles/mixins';
-import colors from '../styles/colors';
+import * as Mixins from '../../styles/mixins';
+import colors from '../../styles/colors';
 
 
-class Loader2 extends Component {
+class Loader1 extends Component {
 
   render() {
     return (
         <View style={styles.outerLayout}>
-            <Image style={styles.gifStyle} source={require('../../assets/images/loading2.gif')} />
+            <Image style={styles.gifStyle} source={require('../../../assets/images/loading1.gif')} />
         </View> 
     )
   }
@@ -22,14 +22,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom:50,
-    backgroundColor:colors.detailedScreenBgColor
+    backgroundColor:colors.bgColor
   },
   gifStyle: {
-    width: Mixins.scale(70),
-    height: Mixins.scale(70),
-    marginBottom: Mixins.scale(50),
+    width: Mixins.scale(95),
+    height: Mixins.scale(95),
+    marginBottom: Mixins.scale(100),
     resizeMode: "contain"
   },
 })
 
-export default Loader2;
+export default Loader1;

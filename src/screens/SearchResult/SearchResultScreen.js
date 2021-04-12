@@ -7,7 +7,8 @@ import colors from "../../styles/colors";
 import styles from "./styles";
 import * as Font from 'expo-font';
 
-import Loader1 from "../../components/Loader1";
+import Loader1 from "../../components/Loaders/Loader1";
+import Loader3 from "../../components/Loaders/Loader3";
 
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/AntDesign';
@@ -20,17 +21,20 @@ class SearchResultScreen extends Component {
     width: Dimensions.get("screen").width,
 
     loading: true,
-    
-    search_type: "seacrh",
+
+    search_type: "search",
+    fixedSearchText : "",
     searchText : "",
-    data : {},
+    has_more: false,
+    data : [],
     page : 1,
   }
 
   componentDidMount(){
     //console.log(this.props.route.params.searchText)
     this.setState({
-      searchText: this.props.route.params.searchText
+      fixedSearchText: this.props.route.params.searchText,
+      searchText: this.props.route.params.searchText,
     },
       function(){
         this.getData(this.state.page)
@@ -58,7 +62,7 @@ class SearchResultScreen extends Component {
         this.setState({
           search_type: "search"
         })
-        let res = await getSearchResults("search", this.state.searchText, page)
+        let res = await getSearchResults("search", this.state.fixedSearchText, page)
         //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
         //console.log(res.data.items.length)
 
@@ -66,9 +70,10 @@ class SearchResultScreen extends Component {
           this.setState({
             search_type: "similar"
           })
-          let res1 = await getSearchResults("similar", this.state.searchText, page)
+          let res1 = await getSearchResults("similar", this.state.fixedSearchText, page)
           this.setState({
-            data : res1.data,
+            data : (this.state.data).concat(res1.data.items),
+            has_more : res1.data.has_more,
           },
             function(){
               setTimeout(() => {this.setState({loading: false,})}, 700)
@@ -80,7 +85,8 @@ class SearchResultScreen extends Component {
         }
         else{
           this.setState({
-            data : res.data,
+            data : (this.state.data).concat(res.data.items),
+            has_more : res.data.has_more,
           },
             function(){
               setTimeout(() => {this.setState({loading: false,})}, 700)
@@ -99,14 +105,39 @@ class SearchResultScreen extends Component {
   startSearch = () => {
     if(this.state.searchText != "") {
       this.setState({
+        fixedSearchText: this.state.searchText,
         loading: true,
-        data : {},
-        page : 1
+        data : [],
+        page : 1,
       },
         function(){
           this.getData(this.state.page)
         }
       ) 
+    }
+  }
+
+  getNextData = async () => {
+      try {
+        let pg = this.state.page + 1
+        let res = await getSearchResults("search", this.state.fixedSearchText, pg)
+        //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
+        //console.log(res.data.items.length)
+
+        this.setState({
+          data : (this.state.data).concat(res.data.items),
+          has_more : res.data.has_more,
+          page: pg,
+        }) 
+
+      } catch (error) {
+        console.log(error.response);
+      }
+  }
+
+  fetchMore = () => {
+    if(this.state.has_more){
+      this.getNextData()
     }
   }
 
@@ -145,12 +176,17 @@ class SearchResultScreen extends Component {
             ) : (
               <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
                 {
-                  this.state.data.items != undefined && this.state.data.items.length > 0 ? (
+                  this.state.data != undefined && this.state.data.length > 0 ? (
                     <FlatList
                       keyExtractor={(item, index) => index.toString()}
                       showsVerticalScrollIndicator= {false}
+                      onEndReached={() => this.fetchMore()}
+                      onEndReachedThreshold={0.5}
+                      ListFooterComponent = {
+                        <Loader3 />
+                      }
                       style={{ width: "100%",alignSelf:"center"}}
-                      data={this.state.data.items}
+                      data={this.state.data}
                       renderItem={({ item }) => (   
                         <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate("DetailedScreen",{id:item.question_id})} style={styles.questionCardLayout}> 
                           <View style={{width:"24%",marginRight: Mixins.scale(10),marginLeft: Mixins.scale(2)}}>
