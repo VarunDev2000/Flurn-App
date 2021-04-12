@@ -20,13 +20,15 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.flurn.flurn",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/others/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       }
     },
     "web": {
-      "favicon": "./assets/others/favicon.png"
+      "favicon": "./assets/others/icon.png"
     }
   }
 }
