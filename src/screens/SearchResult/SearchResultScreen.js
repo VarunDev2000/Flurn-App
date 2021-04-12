@@ -133,13 +133,15 @@ class SearchResultScreen extends Component {
                   renderItem={({ item }) => (   
                     <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate("DetailedScreen",{id:item.question_id})} style={styles.questionCardLayout}> 
                       <View style={{width:"24%",marginRight: Mixins.scale(10),marginLeft: Mixins.scale(2)}}>
-                        {
-                          item.owner.profile_image != undefined ? (
-                          <View style={styles.profileImageOuterlayout}>
-                            <Image style={styles.profileImageStyle} source={{uri : item.owner.profile_image}} />
-                          </View>
-                          ) : (null)
-                        }
+                        <View style={styles.profileImageOuterlayout}>
+                          {
+                            item.owner.profile_image != undefined && item.owner.profile_image != "" ? (
+                              <Image style={styles.profileImageStyle} source={{uri : item.owner.profile_image}} />
+                            ) : (
+                              <Image style={styles.profileImageStyle} source={require("../../../assets/images/unknown.png")} />
+                            )
+                          }
+                        </View>
                         <Text numberOfLines={1} style={[styles.userNameText,{fontFamily:"Poppins-Medium"}]}>{item.owner.display_name}</Text>
                         <View style={{alignSelf:"center",justifyContent:"center",alignItems:"center"}}>
                           <View style={{flexDirection:"row", alignItems:"center", marginBottom:Mixins.scale(5)}}>

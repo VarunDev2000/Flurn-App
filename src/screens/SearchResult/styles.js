@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
         width:Mixins.scale(25),
         height: Mixins.scale(25),
         borderRadius:200,
-        elevation:4,
         backgroundColor:"white",
         alignSelf:"center",
         marginBottom: Mixins.scale(3),
