@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, Image, TextInput } from "react-native";
+import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, Image, TextInput, Alert } from "react-native";
 import HTML from "react-native-render-html";
+import NetInfo from '@react-native-community/netinfo'
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
 import styles from "./styles";
@@ -16,12 +17,12 @@ import Icon2 from 'react-native-vector-icons/AntDesign';
 import { getSearchResults } from '../../actions/actions';
 
 class SearchResultScreen extends Component {
+
   state = {
     height: Dimensions.get("screen").height,
     width: Dimensions.get("screen").width,
 
     loading: true,
-
     search_type: "search",
     fixedSearchText : "",
     searchText : "",
@@ -32,15 +33,36 @@ class SearchResultScreen extends Component {
 
   componentDidMount(){
     //console.log(this.props.route.params.searchText)
+    this.checkNetworkConnection()
     this.setState({
       fixedSearchText: this.props.route.params.searchText,
       searchText: this.props.route.params.searchText,
     },
       function(){
-        this.getData(this.state.page)
+        this.getData()
       }
     )
   }
+
+  componentWillUnmount() {
+    this.checkNetworkConnection()
+  }
+
+  checkNetworkConnection = () => {
+    NetInfo.addEventListener(this.handleConnectivityChange);
+  }
+
+  handleConnectivityChange = state => {
+    if (!state.isConnected) {
+      Alert.alert("Oops!","Your'e offline", [
+        {
+          text: "OK",
+          onPress: () => this.props.navigation.goBack(),
+          style: "cancel"
+        }
+      ]);
+    }
+  };
 
   loadFonts = async () =>{
     await Font.loadAsync({
@@ -56,51 +78,53 @@ class SearchResultScreen extends Component {
     });
   }
 
-  getData = async (page) => {
+
+  getData = async () => {
     this.loadFonts();
-      try {
+    try {
+      this.setState({
+        search_type: "search"
+      })
+      let res = await getSearchResults("search", this.state.fixedSearchText, this.state.page)
+      //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
+      //console.log(res.data.items.length)
+
+      if(this.state.page == 1 && res.data.items.length <= 0){
         this.setState({
-          search_type: "search"
+          search_type: "similar"
         })
-        let res = await getSearchResults("search", this.state.fixedSearchText, page)
+        let res1 = await getSearchResults("similar", this.state.fixedSearchText, this.state.page)
+        this.setState({
+          data : (this.state.data).concat(res1.data.items),
+          has_more : res1.data.has_more,
+        },
+          function(){
+            setTimeout(() => {this.setState({loading: false,})}, 700)
+          }
+        )
+
         //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
-        //console.log(res.data.items.length)
-
-        if(page == 1 && res.data.items.length <= 0){
-          this.setState({
-            search_type: "similar"
-          })
-          let res1 = await getSearchResults("similar", this.state.fixedSearchText, page)
-          this.setState({
-            data : (this.state.data).concat(res1.data.items),
-            has_more : res1.data.has_more,
-          },
-            function(){
-              setTimeout(() => {this.setState({loading: false,})}, 700)
-            }
-          )
-
-          //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
-          //console.log(res1.data)
-        }
-        else{
-          this.setState({
-            data : (this.state.data).concat(res.data.items),
-            has_more : res.data.has_more,
-          },
-            function(){
-              setTimeout(() => {this.setState({loading: false,})}, 700)
-            }
-          )
-        }
-
-      } catch (error) {
-        this.setState({
-          loading: false,
-        })
-        console.log(error.response);
+        //console.log(res1.data)
       }
+      else{
+        this.setState({
+          data : (this.state.data).concat(res.data.items),
+          has_more : res.data.has_more,
+        },
+          function(){
+            setTimeout(() => {this.setState({loading: false,})}, 700)
+          }
+        )
+      }
+
+    } catch (error) {
+      this.setState({
+        loading: false,
+      })
+      console.log(error.response);
+    }
   }
+  
 
   startSearch = () => {
     if(this.state.searchText != "") {
@@ -111,7 +135,7 @@ class SearchResultScreen extends Component {
         page : 1,
       },
         function(){
-          this.getData(this.state.page)
+          this.getData()
         }
       ) 
     }
@@ -237,7 +261,7 @@ class SearchResultScreen extends Component {
                   )
                 }
               </View>
-              )
+            )
           }
         </SafeAreaView>
     );
