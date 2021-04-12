@@ -5,10 +5,12 @@ import colors from '../../styles/colors';
 
 const styles = StyleSheet.create({
     container: {
+        flex:1,
         height: Dimensions.get("screen").height,
         backgroundColor: colors.bgColor,
         justifyContent:"center",
         alignItems:"center",
+        paddingBottom: "20%"
     },
     textFieldStyle: {
         flex:0,
@@ -23,17 +25,20 @@ const styles = StyleSheet.create({
         paddingLeft:Mixins.scale(10),
         paddingRight:Mixins.scale(10),
         color: 'black',
-        elevation:2
+        elevation:1,
+        marginBottom: "15%"
       },
-      imageOuterLayout: {
-          width:Mixins.scale(150),
-          height: Mixins.scale(80),
-          marginBottom: Mixins.scale(20)
+      titleText: {
+          color: colors.primary,
+          fontSize: Mixins.scale(45),
+          marginBottom: "2%"
       },
-      imageStyle: {
-          width:"100%",
-          height:"100%",
-          resizeMode: "cover"
+      cachedQTextOuterLayout: {
+          flexDirection: "row",
+          alignItems:"center",
+      },
+      cachedQText: {
+          fontSize: Mixins.scale(12),
       }
 })
 

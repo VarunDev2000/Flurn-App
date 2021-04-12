@@ -186,7 +186,6 @@ const htmlStyles = StyleSheet.create({
   code: {
       fontFamily: "Poppins-Regular",
       backgroundColor: colors.searchResultCardBgColour,
-      lineHeight: 25,
   },
   p: {
     fontFamily: "Poppins-Regular",
