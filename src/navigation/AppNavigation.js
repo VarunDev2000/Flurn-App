@@ -4,7 +4,7 @@ import { createStackNavigator,CardStyleInterpolators } from "@react-navigation/s
 import HomeScreen from "../screens/Home/HomeScreen"
 import SearchResultScreen from "../screens/SearchResult/SearchResultScreen";
 import DetailedScreen from "../screens/Detailed/DetailedScreen";
-
+import CachedQuestionsScreen from "../screens/CachedQuestions/CachedQuestionsScreen";
 
 const Stack = createStackNavigator();
 
@@ -20,7 +20,7 @@ class AppNavigation extends Component {
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
           <Stack.Screen name="DetailedScreen" component={DetailedScreen} />
-          
+          <Stack.Screen name="CachedQuestionsScreen" component={CachedQuestionsScreen} />
         </Stack.Navigator>
     );
   }

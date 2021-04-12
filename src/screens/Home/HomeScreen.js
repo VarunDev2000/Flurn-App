@@ -76,7 +76,7 @@ class HomeScreen extends Component {
                   </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity activeOpacity={0.55} style={styles.cachedQTextOuterLayout}>
+                <TouchableOpacity activeOpacity={0.55} onPress={() => this.props.navigation.navigate("CachedQuestionsScreen")} style={styles.cachedQTextOuterLayout}>
                   <Icon1 name="bookmark" size={Mixins.scale(14)} color="black" style={{paddingBottom:Mixins.scale(2),paddingRight: Mixins.scale(3)}}/>
                   <Text style={[styles.cachedQText,{fontFamily: "Poppins-Medium"}]}>My Cached Questions</Text>
                 </TouchableOpacity>
