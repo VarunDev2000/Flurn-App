@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, ScrollView, Dimensions, View, Text, TouchableOpacity, Image } from "react-native";
 import HTML from "react-native-render-html";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
 import styles from "../Detailed/styles";

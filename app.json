@@ -21,9 +21,9 @@
     },
     "android": {
       "package": "com.flurn.flurn",
-      "versionCode": 1,
+      "versionCode": 3,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/others/adaptive-icon.png",
+        "foregroundImage": "./assets/others/icon.png",
         "backgroundColor": "#FFFFFF"
       }
     },

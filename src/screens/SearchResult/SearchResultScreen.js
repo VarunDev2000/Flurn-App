@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, Image, TextInput, Alert } from "react-native";
+import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, Image, TextInput, Alert, BackHandler } from "react-native";
 import HTML from "react-native-render-html";
 import NetInfo from '@react-native-community/netinfo'
 import * as Mixins from '../../styles/mixins';
@@ -18,22 +18,25 @@ import { getSearchResults } from '../../actions/actions';
 
 class SearchResultScreen extends Component {
 
-  state = {
-    height: Dimensions.get("screen").height,
-    width: Dimensions.get("screen").width,
+  constructor(props) {
+    super(props)
+    this.state = {
+      height: Dimensions.get("screen").height,
+      width: Dimensions.get("screen").width,
 
-    loading: true,
-    search_type: "search",
-    fixedSearchText : "",
-    searchText : "",
-    has_more: false,
-    data : [],
-    page : 1,
+      loading: true,
+      search_type: "search",
+      fixedSearchText : "",
+      searchText : "",
+      has_more: false,
+      data : [],
+      page : 1,
+    }
+    this.unsubscribe = NetInfo.addEventListener(this.handleConnectivityChange);
   }
 
   componentDidMount(){
     //console.log(this.props.route.params.searchText)
-    this.checkNetworkConnection()
     this.setState({
       fixedSearchText: this.props.route.params.searchText,
       searchText: this.props.route.params.searchText,
@@ -43,13 +46,9 @@ class SearchResultScreen extends Component {
       }
     )
   }
-
+  
   componentWillUnmount() {
-    this.checkNetworkConnection()
-  }
-
-  checkNetworkConnection = () => {
-    NetInfo.addEventListener(this.handleConnectivityChange);
+    this.unsubscribe()
   }
 
   handleConnectivityChange = state => {
@@ -57,7 +56,7 @@ class SearchResultScreen extends Component {
       Alert.alert("Oops!","Your'e offline", [
         {
           text: "OK",
-          onPress: () => this.props.navigation.goBack(),
+          onPress: () => BackHandler.exitApp(),
           style: "cancel"
         }
       ]);

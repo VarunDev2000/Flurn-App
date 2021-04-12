@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Dimensions, StyleSheet, View, Alert, Image, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 import HTML from "react-native-render-html";
 import styles from "./styles";
 import * as Mixins from '../../styles/mixins';
@@ -54,7 +54,14 @@ class CachedQuestionsScreen extends Component {
     //await AsyncStorage.setItem('bookmarks',JSON.stringify({}))
 
     const val = await AsyncStorage.getItem('bookmarks')
-    let b_data = JSON.parse(val)
+    let b_data = {}
+    
+    if(val == undefined | val == null){
+      await AsyncStorage.setItem('bookmarks',JSON.stringify({}))
+    }
+    else{
+      b_data = JSON.parse(val)
+    }
 
     //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
     //console.log(b_data)

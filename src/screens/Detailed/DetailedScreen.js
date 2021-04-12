@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, ScrollView, Dimensions, View, Text, TouchableOpacity, Image } from "react-native";
 import HTML from "react-native-render-html";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
 import styles from "./styles";
@@ -90,7 +90,15 @@ class DetailedScreen extends Component {
 
   getBookMarks = async () => {
     const val = await AsyncStorage.getItem('bookmarks')
-    let final_b_val = JSON.parse(val)
+    let final_b_val = {}
+    if(val == undefined | val == null){
+      await AsyncStorage.setItem('bookmarks',JSON.stringify({}))
+    }
+    else{
+      final_b_val = JSON.parse(val)
+    }
+
+    console.log(val)
 
     //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
     //console.log(this.state.id in final_b_val)
