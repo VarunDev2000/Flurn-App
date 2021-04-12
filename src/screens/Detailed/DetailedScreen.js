@@ -8,6 +8,7 @@ import colors from "../../styles/colors";
 import styles from "./styles";
 import * as Font from 'expo-font';
 
+import {showToast} from "../../components/Toast";
 import Loader2 from "../../components/Loaders/Loader2";
 
 import Icon1 from 'react-native-vector-icons/Ionicons';
@@ -143,6 +144,8 @@ class DetailedScreen extends Component {
 
     const jsonValue = JSON.stringify(final_b_data)
     await AsyncStorage.setItem("bookmarks", jsonValue)
+
+    showToast("Bookmark added");
   }
 
   removeBookMark = async () => {
@@ -150,6 +153,8 @@ class DetailedScreen extends Component {
 
     const jsonValue = JSON.stringify(this.state.bookmark_data)
     await AsyncStorage.setItem("bookmarks", jsonValue)
+
+    showToast("Bookmark removed");
   }
   
   bookMarkClick = () => {
