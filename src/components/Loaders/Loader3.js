@@ -8,7 +8,7 @@ class Loader3 extends Component {
 
   render() {
     return (
-        <View style={styles.outerLayout}>
+        <View style={[styles.outerLayout,{marginBottom:this.props.marginBottom}]}>
             <Image style={styles.gifStyle} source={require('../../../assets/images/loading3.gif')} />
         </View> 
     )

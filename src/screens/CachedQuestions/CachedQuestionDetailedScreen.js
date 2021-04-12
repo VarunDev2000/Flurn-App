@@ -5,19 +5,16 @@ import HTMLView from 'react-native-htmlview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
-import styles from "./styles";
+import styles from "../Detailed/styles";
 import * as Font from 'expo-font';
 
-import {showToast} from "../../components/Toast";
 import Loader2 from "../../components/Loaders/Loader2";
 
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 
-import { getQuestionDetails, getAnswersforQuestion } from '../../actions/actions';
 
-
-class DetailedScreen extends Component {
+class CachedQuestionDetailedScreen extends Component {
 
   state = {
     height: Dimensions.get("screen").height,
@@ -31,9 +28,6 @@ class DetailedScreen extends Component {
     user_name : "",
     score: 0,
     a_data : [],
-
-    bookmark_data : {},
-    bookmarked : false,
   }
 
   componentDidMount(){
@@ -42,7 +36,7 @@ class DetailedScreen extends Component {
       id: this.props.route.params.id
     },
       function(){
-        this.getQuestionData()
+        this.getData()
       }
     )
   }
@@ -61,115 +55,29 @@ class DetailedScreen extends Component {
     });
   }
 
-  getQuestionData = async () => {
-    this.loadFonts();
-    try {
-      this.setState({
-        search_type: "search"
-      })
-      let res = await getQuestionDetails(this.state.id)
-      //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
-      //console.log(res.data.items[0])
+  getData = async () => {
+    this.loadFonts()
 
-      this.setState({
-        question_text : (res.data.items[0].body).replace(/\n/g,""),
-      })
-
-      this.setState({
-        q_data : res.data.items[0],
-        profile_image: res.data.items[0].owner.profile_image,
-        user_name: res.data.items[0].owner.display_name,
-        score: res.data.items[0].score,
-      },
-        function(){
-          this.getBookMarks()
-        }
-      )
-
-    } catch (error) {
-      console.log(error.response);
-    }
-  }
-
-  getBookMarks = async () => {
     const val = await AsyncStorage.getItem('bookmarks')
-    let final_b_val = JSON.parse(val)
+    let b_data = JSON.parse(val)
 
     //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
-    //console.log(this.state.id in final_b_val)
+    //console.log(b_data)
 
     this.setState({
-      bookmark_data : final_b_val,
-      bookmarked : this.state.id in final_b_val,
-    },
-      function(){
-        this.getAnswerData()
-      }
-    )
-  }
-
-  getAnswerData = async () => {
-    
-    try {
-      this.setState({
-        search_type: "search"
-      })
-      let res = await getAnswersforQuestion(this.state.id)
-      //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
-      //console.log(res.data.items)
-      
-      this.setState({
-        a_data : res.data.items
-      },
-        function(){
-          setTimeout(() => {this.setState({loading: false,})}, 700)
-        }
-      )
-
-    } catch (error) {
-      console.log(error.response);
-    }
-  }
-
-  setBookMark = async () => {
-    let b_data = {}
-    let temp = {}
-
-    temp["question_data"] = this.state.q_data
-    temp["answer_data"] = this.state.a_data
-
-    b_data[this.state.id] = temp;
-
-    let final_b_data = {...b_data,...this.state.bookmark_data}
-
-    const jsonValue = JSON.stringify(final_b_data)
-    await AsyncStorage.setItem("bookmarks", jsonValue)
-
-    showToast("Bookmark added");
-  }
-
-  removeBookMark = async () => {
-    delete this.state.bookmark_data[this.state.id]
-
-    const jsonValue = JSON.stringify(this.state.bookmark_data)
-    await AsyncStorage.setItem("bookmarks", jsonValue)
-
-    showToast("Bookmark removed");
-  }
-  
-  bookMarkClick = () => {
-    this.setState({
-      bookmarked : !this.state.bookmarked
+        question_text : (b_data[this.state.id]['question_data'].body).replace(/\n/g,""),
     })
 
-    if(this.state.bookmarked){
-      this.removeBookMark();
-    }
-    else{
-      this.setBookMark();
-    }
+    this.setState({
+        profile_image: b_data[this.state.id]['question_data'].owner.profile_image,
+        user_name: b_data[this.state.id]['question_data'].owner.display_name,
+        score: b_data[this.state.id]['question_data'].score,
+        a_data : b_data[this.state.id]['answer_data'],
+        loading : false
+    })
   }
 
+  
   render() {
     return (
       <SafeAreaView style={{height:this.state.height, backgroundColor:colors.detailedScreenBgColor}}>
@@ -177,19 +85,6 @@ class DetailedScreen extends Component {
           <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.goBack()} style={styles.backButtonOuterLayout}>
             <Icon1 name="ios-chevron-back" size={Mixins.scale(25)} color={colors.primary}/>
           </TouchableOpacity>
-          {
-            !this.state.loading ? (
-              this.state.bookmarked ? (
-                <TouchableOpacity activeOpacity={0.5} onPress={() => this.bookMarkClick()} style={styles.bookmarkButtonOuterLayout}>
-                  <Icon1 name="bookmark" size={Mixins.scale(20)} color= {"red"} />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity activeOpacity={0.5} onPress={() => this.bookMarkClick()} style={styles.bookmarkButtonOuterLayout}>
-                  <Icon1 name="bookmark-outline" size={Mixins.scale(20)} color="#616161" />
-                </TouchableOpacity>
-              )
-            ) : (null) 
-          }
         </View>
         {
           this.state.loading ? (
@@ -259,16 +154,16 @@ class DetailedScreen extends Component {
 
 const htmlStyles = StyleSheet.create({
   code: {
-      fontSize : Mixins.scale(11),
-      fontFamily: "Poppins-Regular",
-      backgroundColor: colors.searchResultCardBgColour,
-      fontStyle:"italic",
+    fontSize : Mixins.scale(11),
+    fontFamily: "Poppins-Regular",
+    backgroundColor: colors.searchResultCardBgColour,
+    fontStyle:"italic",
   },
   p: {
     fontSize : Mixins.scale(11),
     fontFamily: "Poppins-Regular",
     lineHeight: 25,
-    fontStyle:"normal",
+    fontStyle:"normal"
   },
   a: {
     fontSize : Mixins.scale(11),
@@ -276,9 +171,9 @@ const htmlStyles = StyleSheet.create({
     lineHeight: 25,
     color:"green",
     textDecorationLine:"underline",
-    fontStyle:"normal",
+    fontStyle:"normal"
   }
 
 })
 
-export default DetailedScreen;
+export default CachedQuestionDetailedScreen;
