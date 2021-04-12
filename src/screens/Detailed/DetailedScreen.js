@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, ScrollView, Dimensions, View, Text, TouchableOpacity, Image } from "react-native";
 import HTMLView from 'react-native-htmlview';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
 import styles from "./styles";
@@ -29,6 +30,9 @@ class DetailedScreen extends Component {
     user_name : "",
     score: 0,
     a_data : [],
+
+    bookmark_data : {},
+    bookmarked : false,
   }
 
   componentDidMount(){
@@ -71,18 +75,36 @@ class DetailedScreen extends Component {
       })
 
       this.setState({
+        q_data : res.data.items[0],
         profile_image: res.data.items[0].owner.profile_image,
         user_name: res.data.items[0].owner.display_name,
         score: res.data.items[0].score,
       },
         function(){
-          this.getAnswerData()
+          this.getBookMarks()
         }
       )
 
     } catch (error) {
       console.log(error.response);
     }
+  }
+
+  getBookMarks = async () => {
+    const val = await AsyncStorage.getItem('bookmarks')
+    let final_b_val = JSON.parse(val)
+
+    //console.log("-------------------------------------------------------------------------------------------------------------------------------------------------")
+    //console.log(this.state.id in final_b_val)
+
+    this.setState({
+      bookmark_data : final_b_val,
+      bookmarked : this.state.id in final_b_val,
+    },
+      function(){
+        this.getAnswerData()
+      }
+    )
   }
 
   getAnswerData = async () => {
@@ -108,6 +130,41 @@ class DetailedScreen extends Component {
     }
   }
 
+  setBookMark = async () => {
+    let b_data = {}
+    let temp = {}
+
+    temp["question_data"] = this.state.q_data
+    temp["answer_data"] = this.state.a_data
+
+    b_data[this.state.id] = temp;
+
+    let final_b_data = {...b_data,...this.state.bookmark_data}
+
+    const jsonValue = JSON.stringify(final_b_data)
+    await AsyncStorage.setItem("bookmarks", jsonValue)
+  }
+
+  removeBookMark = async () => {
+    delete this.state.bookmark_data[this.state.id]
+
+    const jsonValue = JSON.stringify(this.state.bookmark_data)
+    await AsyncStorage.setItem("bookmarks", jsonValue)
+  }
+  
+  bookMarkClick = () => {
+    this.setState({
+      bookmarked : !this.state.bookmarked
+    })
+
+    if(this.state.bookmarked){
+      this.removeBookMark();
+    }
+    else{
+      this.setBookMark();
+    }
+  }
+
   render() {
     return (
       <SafeAreaView style={{height:this.state.height, backgroundColor:colors.detailedScreenBgColor}}>
@@ -115,6 +172,19 @@ class DetailedScreen extends Component {
           <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.goBack()} style={styles.backButtonOuterLayout}>
             <Icon1 name="ios-chevron-back" size={Mixins.scale(25)} color={colors.primary}/>
           </TouchableOpacity>
+          {
+            !this.state.loading ? (
+              this.state.bookmarked ? (
+                <TouchableOpacity activeOpacity={0.5} onPress={() => this.bookMarkClick()} style={styles.bookmarkButtonOuterLayout}>
+                  <Icon1 name="bookmark" size={Mixins.scale(20)} color= {"red"} />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity activeOpacity={0.5} onPress={() => this.bookMarkClick()} style={styles.bookmarkButtonOuterLayout}>
+                  <Icon1 name="bookmark-outline" size={Mixins.scale(20)} color="#616161" />
+                </TouchableOpacity>
+              )
+            ) : (null) 
+          }
         </View>
         {
           this.state.loading ? (

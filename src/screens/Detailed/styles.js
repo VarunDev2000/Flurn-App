@@ -16,6 +16,11 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         alignItems:"center"
     },
+    bookmarkButtonOuterLayout: {
+        width:"15%",
+        justifyContent:"center",
+        alignItems:"flex-end"
+    },
     questionOuterLayout: {
         elevation:2,
         borderRadius: 3,
