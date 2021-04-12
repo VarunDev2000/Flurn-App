@@ -4,12 +4,12 @@ import * as Mixins from '../styles/mixins';
 import colors from '../styles/colors';
 
 
-class Loader1 extends Component {
+class Loader2 extends Component {
 
   render() {
     return (
         <View style={styles.outerLayout}>
-            <Image style={styles.gifStyle} source={require('../../assets/images/loading1.gif')} />
+            <Image style={styles.gifStyle} source={require('../../assets/images/loading2.gif')} />
         </View> 
     )
   }
@@ -22,14 +22,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom:50,
-    backgroundColor:colors.bgColor
+    backgroundColor:colors.detailedScreenBgColor
   },
   gifStyle: {
-    width: Mixins.scale(95),
-    height: Mixins.scale(95),
-    marginBottom: Mixins.scale(100),
+    width: Mixins.scale(70),
+    height: Mixins.scale(70),
+    marginBottom: Mixins.scale(50),
     resizeMode: "contain"
   },
 })
 
-export default Loader1;
+export default Loader2;

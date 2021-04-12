@@ -5,7 +5,9 @@ import HTMLView from 'react-native-htmlview';
 import * as Mixins from '../../styles/mixins';
 import colors from "../../styles/colors";
 import styles from "./styles";
-import * as Font from 'expo-font'
+import * as Font from 'expo-font';
+
+import Loader2 from "../../components/Loader2";
 
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/AntDesign';
@@ -18,6 +20,8 @@ class DetailedScreen extends Component {
   state = {
     height: Dimensions.get("screen").height,
     width: Dimensions.get("screen").width,
+    
+    loading: true,
 
     id : null,
     question_text : "",
@@ -34,7 +38,6 @@ class DetailedScreen extends Component {
     },
       function(){
         this.getQuestionData()
-        this.getAnswerData()
       }
     )
   }
@@ -71,7 +74,11 @@ class DetailedScreen extends Component {
         profile_image: res.data.items[0].owner.profile_image,
         user_name: res.data.items[0].owner.display_name,
         score: res.data.items[0].score,
-      })
+      },
+        function(){
+          this.getAnswerData()
+        }
+      )
 
     } catch (error) {
       console.log(error.response);
@@ -90,7 +97,11 @@ class DetailedScreen extends Component {
       
       this.setState({
         a_data : res.data.items
-      })
+      },
+        function(){
+          setTimeout(() => {this.setState({loading: false,})}, 700)
+        }
+      )
 
     } catch (error) {
       console.log(error.response);
@@ -105,62 +116,68 @@ class DetailedScreen extends Component {
             <Icon1 name="ios-chevron-back" size={Mixins.scale(25)} color={colors.primary}/>
           </TouchableOpacity>
         </View>
-        <ScrollView>
-          <View style={styles.questionOuterLayout}>
-            <View style={styles.cardInfoLayout}>
-              <View style={{width:"69%",flexDirection:"row",alignItems:"center",flexWrap:"wrap"}}>
-                <View style={styles.profileImageOuterlayout}>
-                  {
-                    this.state.profile_image != undefined && this.state.profile_image != "" ? (
-                      <Image style={styles.profileImageStyle} source={{uri : this.state.profile_image}} />
-                    ) : (
-                      <Image style={styles.profileImageStyle} source={require("../../../assets/images/unknown.png")} />
-                    )
-                  }
+        {
+          this.state.loading ? (
+            <Loader2 />
+          ) : (
+            <ScrollView>
+              <View style={styles.questionOuterLayout}>
+                <View style={styles.cardInfoLayout}>
+                  <View style={{width:"69%",flexDirection:"row",alignItems:"center",flexWrap:"wrap"}}>
+                    <View style={styles.profileImageOuterlayout}>
+                      {
+                        this.state.profile_image != undefined && this.state.profile_image != "" ? (
+                          <Image style={styles.profileImageStyle} source={{uri : this.state.profile_image}} />
+                        ) : (
+                          <Image style={styles.profileImageStyle} source={require("../../../assets/images/unknown.png")} />
+                        )
+                      }
+                    </View>
+                    <Text numberOfLines={1} style={[styles.userNameText,{fontFamily:"Poppins-SemiBold"}]}>{this.state.user_name}</Text>
+                  </View>
+                  <View style={{width:"29%",flexDirection:"row",alignItems:"center",justifyContent:"flex-end",flexWrap:"wrap"}}>
+                    <Icon2 name="caretup" size={Mixins.scale(15)} color="black" style={{marginRight:Mixins.scale(5)}}/>
+                    <Text numberOfLines={1} style={[styles.scoreText,{fontFamily:"Poppins-Medium"}]}>{this.state.score}</Text>
+                  </View>
                 </View>
-                <Text numberOfLines={1} style={[styles.userNameText,{fontFamily:"Poppins-SemiBold"}]}>{this.state.user_name}</Text>
+                <View style={styles.cardQuestionDescriptionLayout}>
+                  <HTMLView stylesheet={htmlStyles} value={this.state.question_text} />
+                </View>
               </View>
-              <View style={{width:"29%",flexDirection:"row",alignItems:"center",justifyContent:"flex-end",flexWrap:"wrap"}}>
-                <Icon2 name="caretup" size={Mixins.scale(15)} color="black" style={{marginRight:Mixins.scale(5)}}/>
-                <Text numberOfLines={1} style={[styles.scoreText,{fontFamily:"Poppins-Medium"}]}>{this.state.score}</Text>
-              </View>
-            </View>
-            <View style={styles.cardQuestionDescriptionLayout}>
-              <HTMLView stylesheet={htmlStyles} value={this.state.question_text} />
-            </View>
-          </View>
-          {
-            this.state.a_data.map(function(object, i){
-              let answer_text = (object.body).replace(/\n/g,"")
-              return (
-                <View key={"answer" + i} style={[styles.answerOuterLayout,{borderWidth : object.is_accepted ? (0.7) : (0)}]}>
-                  <View style={styles.cardInfoLayout}>
-                    <View style={{width:"69%",flexDirection:"row",alignItems:"center",flexWrap:"wrap"}}>
-                      <View style={styles.profileImageOuterlayout}>
-                        {
-                          object.owner.profile_image != undefined && object.owner.profile_image != "" ? (
-                              <Image style={styles.profileImageStyle} source={{uri : object.owner.profile_image}} />
-                          ) : (
-                            <Image style={styles.profileImageStyle} source={require("../../../assets/images/unknown.png")} />
-                          )
-                        }
+              {
+                this.state.a_data.map(function(object, i){
+                  let answer_text = (object.body).replace(/\n/g,"")
+                  return (
+                    <View key={"answer" + i} style={[styles.answerOuterLayout,{borderWidth : object.is_accepted ? (0.7) : (0)}]}>
+                      <View style={styles.cardInfoLayout}>
+                        <View style={{width:"69%",flexDirection:"row",alignItems:"center",flexWrap:"wrap"}}>
+                          <View style={styles.profileImageOuterlayout}>
+                            {
+                              object.owner.profile_image != undefined && object.owner.profile_image != "" ? (
+                                  <Image style={styles.profileImageStyle} source={{uri : object.owner.profile_image}} />
+                              ) : (
+                                <Image style={styles.profileImageStyle} source={require("../../../assets/images/unknown.png")} />
+                              )
+                            }
+                          </View>
+                          <Text numberOfLines={1} style={[styles.userNameText,{fontFamily:"Poppins-SemiBold"}]}>{object.owner.display_name}</Text>
+                        </View>
+                        <View style={{width:"29%",flexDirection:"row",alignItems:"center",justifyContent:"flex-end",flexWrap:"wrap"}}>
+                          <Icon2 name="caretup" size={Mixins.scale(15)} color="black" style={{marginRight:Mixins.scale(5)}}/>
+                          <Text numberOfLines={1} style={[styles.scoreText,{fontFamily:"Poppins-Medium"}]}>{object.score}</Text>
+                        </View>
                       </View>
-                      <Text numberOfLines={1} style={[styles.userNameText,{fontFamily:"Poppins-SemiBold"}]}>{object.owner.display_name}</Text>
+                      <View style={styles.cardAnswerDescriptionLayout}>
+                        <HTMLView stylesheet={htmlStyles} value={answer_text} />
+                      </View>
                     </View>
-                    <View style={{width:"29%",flexDirection:"row",alignItems:"center",justifyContent:"flex-end",flexWrap:"wrap"}}>
-                      <Icon2 name="caretup" size={Mixins.scale(15)} color="black" style={{marginRight:Mixins.scale(5)}}/>
-                      <Text numberOfLines={1} style={[styles.scoreText,{fontFamily:"Poppins-Medium"}]}>{object.score}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.cardAnswerDescriptionLayout}>
-                    <HTMLView stylesheet={htmlStyles} value={answer_text} />
-                  </View>
-                </View>
-              )
-            })
-          }
-        </ScrollView>
-      </SafeAreaView>
+                  )
+                })
+              }
+            </ScrollView>
+          )
+        }
+        </SafeAreaView>
     );
   }
 }
