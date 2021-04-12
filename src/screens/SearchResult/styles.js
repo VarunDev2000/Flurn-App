@@ -97,7 +97,6 @@ const styles = StyleSheet.create({
         marginBottom: Mixins.scale(10),
         alignSelf:"center",
         textAlign:"center",
-        width:"100%",
         color:"#808080",
         textDecorationLine:"underline"
     },
