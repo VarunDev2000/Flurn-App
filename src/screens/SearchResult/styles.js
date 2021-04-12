@@ -9,14 +9,15 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         justifyContent:"space-between",
         alignItems:"center",
+        alignSelf:"center"
     },
     backButtonOuterLayout: {
-        width:"15%",
+        width:"10%",
         justifyContent:"center",
         alignItems:"center"
     },
     textFieldStyle: {
-        width:"80%",
+        width:"82%",
         flex:0,
         flexDirection:"row",
         alignSelf:"center",

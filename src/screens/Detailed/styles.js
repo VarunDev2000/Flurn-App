@@ -10,16 +10,17 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         justifyContent:"space-between",
         alignItems:"center",
+        alignSelf:"center",
     },
     backButtonOuterLayout: {
-        width:"15%",
+        width:"10%",
         justifyContent:"center",
         alignItems:"center"
     },
     bookmarkButtonOuterLayout: {
         width:"15%",
         justifyContent:"center",
-        alignItems:"flex-end"
+        alignItems:"center"
     },
     questionOuterLayout: {
         elevation:2,
